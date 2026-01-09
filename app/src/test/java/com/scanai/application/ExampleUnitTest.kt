@@ -1,4 +1,4 @@
-package com.scanai.app
+package com.scanai.application
 
 import org.junit.Test
 

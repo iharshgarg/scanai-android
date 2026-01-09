@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "com.scanai.app"
+    namespace = "com.scanai.application"
 
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.scanai.app"
+        applicationId = "com.scanai.application"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

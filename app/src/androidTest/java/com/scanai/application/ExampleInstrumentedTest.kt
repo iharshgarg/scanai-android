@@ -1,4 +1,4 @@
-package com.scanai.app
+package com.scanai.application
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

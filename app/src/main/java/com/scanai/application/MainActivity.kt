@@ -1,4 +1,4 @@
-package com.scanai.app
+package com.scanai.application
 
 import android.Manifest
 import android.content.pm.PackageManager

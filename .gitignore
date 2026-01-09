@@ -1,16 +1,23 @@
+# Android Studio / IntelliJ
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Gradle
+.gradle/
+build/
+
+# Local config
 local.properties
-/app/release/app-release.aab
+
+# Native builds
+.externalNativeBuild/
+.cxx/
+
+# Generated files
+captures/
+
+# Release artifacts
+*.aab
+
+# OS files
+.DS_Store

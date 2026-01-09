@@ -48,7 +48,13 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            ScanAIScreen()
+            var ready by remember { mutableStateOf(false) }
+
+            if (ready) {
+                ScanAIScreen()
+            } else {
+                StartupScreen { ready = true }
+            }
         }
     }
 }

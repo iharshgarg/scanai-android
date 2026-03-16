@@ -10,32 +10,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.util.concurrent.Executors
 
 @Composable
 fun StartupScreen(onReady: () -> Unit) {
-    var status by remember { mutableStateOf("Warming up server…") }
-    var failed by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        checkServer(
-            onSuccess = { onReady() },
-            onFailure = {
-                status = "Unable to reach server."
-                failed = true
-            }
+    var status by remember {
+        mutableStateOf(
+            "Starting AI engine...\nThis may take up to 2 minutes.\nPlease be patient."
         )
     }
 
+    var showRetry by remember { mutableStateOf(false) }
+    var retryTrigger by remember { mutableStateOf(0) }
+
+    LaunchedEffect(retryTrigger) {
+
+        showRetry = false
+        status =
+            "Starting AI engine...\nThis may take up to 2 minutes.\nPlease be patient."
+
+        val startTime = System.currentTimeMillis()
+        val maxWait = 120000L   // 2 minutes
+
+        while (true) {
+
+            val success = checkServerOnce()
+
+            if (success) {
+                onReady()
+                break
+            }
+
+            val elapsed = System.currentTimeMillis() - startTime
+
+            if (elapsed > maxWait) {
+                status =
+                    "Server is taking longer than expected.\nPlease tap retry."
+                showRetry = true
+                break
+            }
+
+            delay(4000) // retry every 4 seconds
+        }
+    }
+
     MaterialTheme(colorScheme = darkColorScheme()) {
+
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF121212)),
             color = Color(0xFF121212)
         ) {
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -56,32 +88,24 @@ fun StartupScreen(onReady: () -> Unit) {
                     fontSize = 16.sp
                 )
 
-                if (!failed) {
-                    Spacer(Modifier.height(20.dp))
-                    CircularProgressIndicator(
-                        color = Color(0xFF00C853)
-                    )
-                }
+                Spacer(Modifier.height(24.dp))
 
-                if (failed) {
-                    Spacer(Modifier.height(20.dp))
+                CircularProgressIndicator(
+                    color = Color(0xFF00C853)
+                )
+
+                if (showRetry) {
+
+                    Spacer(Modifier.height(24.dp))
+
                     Button(
-                        onClick = {
-                            failed = false
-                            status = "Retrying…"
-                            checkServer(
-                                onSuccess = { onReady() },
-                                onFailure = {
-                                    status = "Unable to reach server."
-                                    failed = true
-                                }
-                            )
-                        },
+                        onClick = { retryTrigger++ },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF00C853),
                             contentColor = Color.Black
                         ),
-                        shape = RoundedCornerShape(30.dp)
+                        shape = RoundedCornerShape(30.dp),
+                        modifier = Modifier.height(50.dp)
                     ) {
                         Text("Retry")
                     }
@@ -91,12 +115,9 @@ fun StartupScreen(onReady: () -> Unit) {
     }
 }
 
-private fun checkServer(
-    onSuccess: () -> Unit,
-    onFailure: () -> Unit
-) {
-    val executor = Executors.newSingleThreadExecutor()
-    executor.execute {
+suspend fun checkServerOnce(): Boolean {
+
+    return withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder()
                 .url("https://www.scanai.live")
@@ -104,13 +125,10 @@ private fun checkServer(
                 .build()
 
             val response = OkHttpClient().newCall(request).execute()
-            if (response.isSuccessful) {
-                onSuccess()
-            } else {
-                onFailure()
-            }
+            response.isSuccessful
+
         } catch (e: Exception) {
-            onFailure()
+            false
         }
     }
 }

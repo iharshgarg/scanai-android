@@ -1,13 +1,16 @@
 # Android Studio / IntelliJ
 .idea/
 *.iml
+*.ipr
+*.iws
 
 # Gradle
 .gradle/
-build/
+**/build/
 
-# Local config
+# Local config (VERY IMPORTANT)
 local.properties
+gradle-daemon-jvm.properties
 
 # Native builds
 .externalNativeBuild/
@@ -16,8 +19,14 @@ local.properties
 # Generated files
 captures/
 
+# Signing files (IMPORTANT for security)
+*.jks
+*.keystore
+
 # Release artifacts
+*.apk
 *.aab
 
 # OS files
 .DS_Store
+Thumbs.db

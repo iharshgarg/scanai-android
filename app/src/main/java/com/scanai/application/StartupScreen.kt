@@ -120,7 +120,7 @@ suspend fun checkServerOnce(): Boolean {
     return withContext(Dispatchers.IO) {
         try {
             val request = Request.Builder()
-                .url("https://www.scanai.live")
+                .url("https://scanaiapp.vercel.app")
                 .get()
                 .build()
 

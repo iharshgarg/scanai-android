@@ -238,7 +238,7 @@ fun uploadImage(
         .build()
 
     val request = Request.Builder()
-        .url("https://www.scanai.live/upload")
+        .url("https://scanaiapp.vercel.app/upload")
         .post(requestBody)
         .build()
 
